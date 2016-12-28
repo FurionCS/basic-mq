@@ -16,6 +16,12 @@ public class EventMessage implements Serializable{
 	private String queueName;  
     
     private String exchangeName;  
+    
+    private String routingKey;
+    
+    private String consumerQueueName;
+    
+    private String consumerExchange;
       
     private byte[] eventData;  
     
@@ -37,6 +43,37 @@ public class EventMessage implements Serializable{
 		this.eventData = eventData;
 		this.type = type;
 	}
+    
+
+
+	public EventMessage(String queueName, String exchangeName,
+			String routingKey, byte[] eventData, int type) {
+		super();
+		this.queueName = queueName;
+		this.exchangeName = exchangeName;
+		this.routingKey = routingKey;
+		this.eventData = eventData;
+		this.type = type;
+	}
+	
+
+	public EventMessage(String queueName, String exchangeName,
+			String routingKey, String consumerQueueName,
+			String consumerExchange, byte[] eventData, int type) {
+		super();
+		this.queueName = queueName;
+		this.exchangeName = exchangeName;
+		this.routingKey = routingKey;
+		this.consumerQueueName = consumerQueueName;
+		this.consumerExchange = consumerExchange;
+		this.eventData = eventData;
+		this.type = type;
+	}
+
+
+	public String getConsumerExchange() {
+		return consumerExchange;
+	}
 
 
 	public EventMessage() {  
@@ -56,14 +93,21 @@ public class EventMessage implements Serializable{
     public int getType() {
 		return type;
 	}
+	public String getRoutingKey() {
+		return routingKey;
+	}
+	public String getConsumerQueueName() {
+		return consumerQueueName;
+	}
 
 
+	@Override
+	public String toString() {
+		return "EventMessage [queueName=" + queueName + ", exchangeName="
+				+ exchangeName + ", routingKey=" + routingKey + ", eventData="
+				+ Arrays.toString(eventData) + ", type=" + type + "]";
+	}
 
-
-	@Override  
-    public String toString() {  
-        return "EopEventMessage [queueName=" + queueName + ", exchangeName="  
-                + exchangeName + ", eventData=" + Arrays.toString(eventData)  
-                + "]";  
-    }  
+	
+	
 }

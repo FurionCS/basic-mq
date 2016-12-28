@@ -27,5 +27,8 @@ public interface EventController {
       
     /*in map, the key is queue name, but value is exchange name*/  
     EventController add(Map<String,String> bindings, EventProcesser eventProcesser);  
+    
+    
+    EventController add(String queueName,String exchangeName,String routingKey,EventProcesser eventProcesser);
       
 }

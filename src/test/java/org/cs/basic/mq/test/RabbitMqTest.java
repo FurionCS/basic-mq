@@ -16,11 +16,11 @@ import org.junit.Test;
 import org.springframework.amqp.core.ReceiveAndReplyCallback;
 
 public class RabbitMqTest {
-	private String defaultHost = "115.28.44.238";  
+	private String defaultHost = "192.168.0.19";  
     
-    private String defaultExchange = "EXCHANGE_DIRECT_TEST";  
+    private String defaultExchange = "EXCHANGE_DIRECT_YOTIME";  
       
-    private String defaultQueue = "QUEUE_TEST";  
+    private String defaultQueue = "QUEUE_TEST1";  
       
     private DefaultEventController controller;  
       
@@ -29,21 +29,23 @@ public class RabbitMqTest {
     @Before  
     public void init() throws IOException{  
    //     EventControlConfig config = new EventControlConfig(defaultHost);
-        EventControlConfig config2 = new EventControlConfig("115.28.44.238","cs","123456");
+        EventControlConfig config2 = new EventControlConfig("192.168.0.19","admin","admin");
         controller = DefaultEventController.getInstance(config2);  
         eventTemplate = controller.getEopEventTemplate();  
-//        controller.add(defaultQueue, defaultExchange, new ApiProcessEventProcessor2());  
-//        controller.add("QUEUE_TEST1", defaultExchange, new ApiProcessEventProcessor());  
-//       controller.start();  
+      //  controller.add("QUEUE_TEST2", "EXCHANGE_TIME_YOTIME","Q_TIME_TEST",new ApiProcessEventProcessor2());  
+       // controller.add("QUEUE_TEST1", defaultExchange, new ApiProcessEventProcessorRPC());  
+        controller.add("QUEUE_TEST4", defaultExchange,"routingKey",new ApiProcessEventProcessor2());  
+        controller.start();  
     }  
       
     @Test  
     public void sendString() throws Exception{  
-       System.out.println("test异步");
-       Object obj=eventTemplate.sendAndReceive("QUEUE_TEST1", defaultExchange, "hello world");  
-       eventTemplate.send(defaultQueue, defaultExchange, "hello world");
-       System.out.println("test异步");
-       System.out.println("返回"+obj);
+    //   System.out.println("test异步");
+    //    Object obj=eventTemplate.sendAndReceive("QUEUE_TEST1", defaultExchange, "hello world");  
+    //	 eventTemplate.send("Q_TIME_TEST", defaultExchange,"QUEUE_TEST2","EXCHANGE_TIME_YOTIME","Q_TIME_TEST","hello world");
+    	 eventTemplate.send("QUEUE_TEST4", defaultExchange,"routingKey","hello world");
+    //   System.out.println("test异步");
+    //  System.out.println("返回"+obj);
     }  
       
     @Test  
@@ -89,7 +91,7 @@ public class RabbitMqTest {
         return hanMeiMei;  
     }  
       
-    class ApiProcessEventProcessor implements EventProcesserRPC{
+    class ApiProcessEventProcessorRPC implements EventProcesserRPC{
 		public Object process(Object e) {
 				System.out.println("我进自定义rpc方法咯");
 				 People cs = new People();  

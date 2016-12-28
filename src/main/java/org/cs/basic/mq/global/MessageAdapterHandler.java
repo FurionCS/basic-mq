@@ -69,37 +69,42 @@ public class MessageAdapterHandler {
 		            logger.warn("The EventMessage's queueName and exchangeName is empty, this is not allowed, and processing message is canceled.");  
 		            return "error";  
 		        }  
-		        System.out.println(eem.getExchangeName());
-		        // 解码，并交给对应的EventHandle执行  
-		        EventProcessorWrap eepw = epwMap.get(eem.getQueueName()+"|"+eem.getExchangeName());  
+		        System.out.println(eem.toString());
+		        // 解码，并交给对应的EventHandle执行 
+		        EventProcessorWrap eepw=null;
+		        if(eem.getType()==2){
+		        	eepw= epwMap.get(eem.getConsumerQueueName()+"|"+eem.getConsumerExchange()+"|"+eem.getRoutingKey()); 
+		        }else{
+		        	eepw= epwMap.get(eem.getQueueName()+"|"+eem.getExchangeName()+"|"+eem.getRoutingKey());
+		        }
 		        if (eepw == null) {  
 		            logger.warn("Receive an EopEventMessage, but no processor can do it.");  
 		            return "error";  
 		        }  
 		        Object obj=null;
-		        if(eem.getType()==0){
+		        if(eem.getType()==0|| eem.getType()==2){
 		        	eepw.process(eem.getEventData());
 		        }else if(eem.getType()==1){
 		        	obj=eepw.processRpc(eem.getEventData());
 		        }
 		        return obj;
 	    }
-	    protected void add(String queueName, String exchangeName, EventProcesser processor,CodecFactory codecFactory) {  
-	        if (StringUtils.isEmpty(queueName) || StringUtils.isEmpty(exchangeName) || processor == null || codecFactory == null) {  
+	    protected void add(String queueName, String exchangeName, EventProcesser processor,CodecFactory codecFactory,String routingKey) {  
+	        if (StringUtils.isEmpty(queueName) || StringUtils.isEmpty(exchangeName) || processor == null || codecFactory == null || routingKey==null) {  
 	            throw new RuntimeException("queueName and exchangeName can not be empty,and processor or codecFactory can not be null. ");  
 	        }  
 	        EventProcessorWrap epw = new EventProcessorWrap(codecFactory,processor);  
-	        EventProcessorWrap oldProcessorWrap = epwMap.putIfAbsent(queueName + "|" + exchangeName, epw);  
+	        EventProcessorWrap oldProcessorWrap = epwMap.putIfAbsent(queueName + "|" + exchangeName+"|"+routingKey, epw);  
 	        if (oldProcessorWrap != null) {  
 	            logger.warn("The processor of this queue and exchange exists, and the new one can't be add");  
 	        }  
 	    }  
-	    protected void add(String queueName, String exchangeName, EventProcesserRPC processor,CodecFactory codecFactory) {  
+	    protected void add(String queueName, String exchangeName, EventProcesserRPC processor,CodecFactory codecFactory,String routingKey) {  
 	        if (StringUtils.isEmpty(queueName) || StringUtils.isEmpty(exchangeName) || processor == null || codecFactory == null) {  
 	            throw new RuntimeException("queueName and exchangeName can not be empty,and processor or codecFactory can not be null. ");  
 	        }  
 	        EventProcessorWrap epw = new EventProcessorWrap(codecFactory,processor);  
-	        EventProcessorWrap oldProcessorWrap = epwMap.putIfAbsent(queueName + "|" + exchangeName, epw);  
+	        EventProcessorWrap oldProcessorWrap = epwMap.putIfAbsent(queueName + "|" + exchangeName+"|"+routingKey, epw);  
 	        if (oldProcessorWrap != null) {  
 	            logger.warn("The processor of this queue and exchange exists, and the new one can't be add");  
 	        }  

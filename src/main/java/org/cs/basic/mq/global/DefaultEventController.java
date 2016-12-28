@@ -130,7 +130,7 @@ public class DefaultEventController implements EventController {
 	        Set<String> mapping = msgAdapterHandler.getAllBinding();  
 	        for (String relation : mapping) {  
 	            String[] relaArr = relation.split("\\|");  
-	            declareBinding(relaArr[1], relaArr[0]);  
+	            declareBinding(relaArr[1], relaArr[0],relaArr[2]);  
 	        }  
 	        initMsgListenerAdapter();  
 	        isStarted.set(true);  
@@ -161,21 +161,29 @@ public class DefaultEventController implements EventController {
 	  
 	      
 	    public EventController add(String queueName, String exchangeName,EventProcesser eventProcesser) {  
-	        return add(queueName, exchangeName, eventProcesser, defaultCodecFactory);  
+	        return add(queueName, exchangeName, eventProcesser, defaultCodecFactory,queueName);  
 	    }  
-	      
-	    public EventController add(String queueName, String exchangeName,EventProcesser eventProcesser,CodecFactory codecFactory) {  
-	        msgAdapterHandler.add(queueName, exchangeName, eventProcesser, defaultCodecFactory);  
+	    public EventController add(String queueName, String exchangeName,
+				String routingKey, EventProcesser eventProcesser) {
+			return add(queueName, exchangeName, eventProcesser, defaultCodecFactory,routingKey);
+		}  
+	    public EventController add(String queueName, String exchangeName,EventProcesser eventProcesser,CodecFactory codecFactory,String routingKey) {  
+	        msgAdapterHandler.add(queueName, exchangeName, eventProcesser, defaultCodecFactory,routingKey);  
 	        if(isStarted.get()){  
 	            initMsgListenerAdapter();  
 	        }  
 	        return this;  
 	    }  
+		
 	    public EventController add(String queueName, String exchangeName,EventProcesserRPC eventProcesser) {  
-	        return add(queueName, exchangeName, eventProcesser, defaultCodecFactory);  
+	        return add(queueName, exchangeName, eventProcesser, defaultCodecFactory,queueName);  
 	    }  
-	    public EventController add(String queueName, String exchangeName,EventProcesserRPC eventProcesser,CodecFactory codecFactory) {  
-	        msgAdapterHandler.add(queueName, exchangeName, eventProcesser, defaultCodecFactory);  
+	    public EventController add(String queueName, String exchangeName,
+				String routingKey, EventProcesserRPC eventProcesser) {
+			return add(queueName, exchangeName, eventProcesser, defaultCodecFactory,routingKey);
+		}
+	    public EventController add(String queueName, String exchangeName,EventProcesserRPC eventProcesser,CodecFactory codecFactory,String routingKey) {  
+	        msgAdapterHandler.add(queueName, exchangeName, eventProcesser, defaultCodecFactory,routingKey);  
 	        if(isStarted.get()){  
 	            initMsgListenerAdapter();  
 	        }  
@@ -189,22 +197,22 @@ public class DefaultEventController implements EventController {
 	    public EventController add(Map<String, String> bindings,  
 	            EventProcesser eventProcesser, CodecFactory codecFactory) {  
 	        for(Map.Entry<String, String> item: bindings.entrySet())   
-	            msgAdapterHandler.add(item.getKey(),item.getValue(), eventProcesser,codecFactory);  
+	            msgAdapterHandler.add(item.getKey(),item.getValue(), eventProcesser,codecFactory,item.getKey());  
 	        return this;  
 	    }  
 	      
 	    /** 
 	     * exchange和queue是否已经绑定 
 	     */  
-	    protected boolean beBinded(String exchangeName, String queueName) {  
-	        return binded.contains(exchangeName+"|"+queueName);  
+	    protected boolean beBinded(String exchangeName, String queueName,String routingKey) {  
+	        return binded.contains(exchangeName+"|"+queueName+"|"+routingKey);  
 	    }  
 	      
 	    /** 
 	     * 声明exchange和queue已经它们的绑定关系 
 	     */  
-	    protected synchronized void declareBinding(String exchangeName, String queueName) {  
-	        String bindRelation = exchangeName+"|"+queueName;  
+	    protected synchronized void declareBinding(String exchangeName, String queueName,String routingKey) {  
+	        String bindRelation = exchangeName+"|"+queueName+"|"+routingKey;  
 	        if (binded.contains(bindRelation)) return;  
 	          
 	        boolean needBinding = false;  
@@ -225,10 +233,12 @@ public class DefaultEventController implements EventController {
 	        }  
 	          
 	        if(needBinding) {  
-	            Binding binding = BindingBuilder.bind(queue).to(directExchange).with(queueName);//将queue绑定到exchange  
+	            Binding binding = BindingBuilder.bind(queue).to(directExchange).with(routingKey);//将queue绑定到exchange  
 	            rabbitAdmin.declareBinding(binding);//声明绑定关系  
 	            binded.add(bindRelation);  
 	        }  
-	    }  
+	    }
+
+	
 	  
 }

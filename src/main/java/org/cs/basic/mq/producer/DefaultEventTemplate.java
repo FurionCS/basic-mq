@@ -36,16 +36,40 @@ public class DefaultEventTemplate implements EventTemplate {
 	        this.defaultCodecFactory = defaultCodecFactory;  
 	    }  
 	  
-	   
+	    /**
+	     * 普通消费模式
+	     */
 	    public void send(String queueName, String exchangeName, Object eventContent)  
 	            throws Exception {  
-	        this.send(queueName, exchangeName, eventContent, defaultCodecFactory,0);  
+	        this.send(queueName, exchangeName, null,null,eventContent, defaultCodecFactory,0,queueName);  
 	    }    
-	  
-	    private Object send(String queueName, String exchangeName, Object eventContent,  
-	            CodecFactory codecFactory,int type) throws Exception {  
-	        if (StringUtils.isEmpty(queueName) || StringUtils.isEmpty(exchangeName)) {  
-	            throw new Exception("queueName exchangeName can not be empty.");  
+	    /**
+	     * 带路由的普通消费模式
+	     */
+		public void send(String queueName, String exchangeName, String routing,
+				Object eventContent) throws Exception {
+			this.send(queueName, exchangeName, null,null,eventContent, defaultCodecFactory, 0, routing);
+		}  
+		/**
+		 * 延迟消费模式
+		 */
+		public void send(String queueName, String exchangeName, String consumerQueueName,String consumerExchange,String routing,
+				Object eventContent) throws Exception {
+			this.send(queueName, exchangeName,consumerQueueName,consumerExchange,eventContent, defaultCodecFactory, 2, routing);
+		} 
+		/**
+		 * rpc模式
+		 */
+		public Object sendAndReceive(String queueName, String exchangeName,
+				Object eventContent) throws Exception {
+					return  this.send(queueName, exchangeName, null,null,eventContent, defaultCodecFactory,1,queueName);  
+		}
+
+		
+	    private Object send(String queueName, String exchangeName, String consumerQueueName,String consumerExchange, Object eventContent,  
+	            CodecFactory codecFactory,int type,String routingKey) throws Exception {  
+	        if (StringUtils.isEmpty(queueName) || StringUtils.isEmpty(exchangeName) || StringUtils.isEmpty(routingKey)) {  
+	            throw new Exception("queueName exchangeName routingKey can not be empty.");  
 	        }  
 	          
 //	      if (!eec.beBinded(exchangeName, queueName))  
@@ -68,13 +92,14 @@ public class DefaultEventTemplate implements EventTemplate {
 	        }  
 	        Object obj=null;
 	        // 构造成Message  
-	        EventMessage msg = new EventMessage(queueName, exchangeName,  
+	        EventMessage msg = new EventMessage(queueName, exchangeName,routingKey, consumerQueueName,consumerExchange,
 	                eventContentBytes,type);  
+	        
 	        try {  
-	        	if(type==0){   //普通
-	        		eventAmqpTemplate.convertAndSend(exchangeName, queueName, msg); 
+	        	if(type==0 || type==2){   //普通
+	        		eventAmqpTemplate.convertAndSend(exchangeName, routingKey, msg); 
 	        	}else if(type==1){  //rpc
-	        		obj=eventAmqpTemplate.convertSendAndReceive(queueName,msg);
+	        		obj=eventAmqpTemplate.convertSendAndReceive(routingKey,msg);
 	        	}
 	        } catch (AmqpException e) {  
 	            logger.error("send event fail. Event Message : [" + eventContent + "]", e);  
@@ -83,10 +108,9 @@ public class DefaultEventTemplate implements EventTemplate {
 			return obj;  
 	    }
 
+	    
+		
 
-		public Object sendAndReceive(String queueName, String exchangeName,
-				Object eventContent) throws Exception {
-					return  this.send(queueName, exchangeName, eventContent, defaultCodecFactory,1);  
-		}  
+
 
 }
