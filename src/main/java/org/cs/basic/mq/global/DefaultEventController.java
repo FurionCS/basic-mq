@@ -96,9 +96,14 @@ public class DefaultEventController implements EventController {
 	     */  
 	    private void initRabbitConnectionFactory() {  
 	        rabbitConnectionFactory = new CachingConnectionFactory();  
-	        rabbitConnectionFactory.setHost(config.getServerHost());  
+	        if(config.getServerHost().contains(",")){
+	        	rabbitConnectionFactory.setAddresses(config.getServerHost());
+	        }else{
+	        	rabbitConnectionFactory.setHost(config.getServerHost());  
+	        	 rabbitConnectionFactory.setPort(config.getPort()); 
+	        }
 	        rabbitConnectionFactory.setChannelCacheSize(config.getEventMsgProcessNum());  
-	        rabbitConnectionFactory.setPort(config.getPort());  
+	        
 	        rabbitConnectionFactory.setUsername(config.getUsername());  
 	        rabbitConnectionFactory.setPassword(config.getPassword());  
 	        if (!StringUtils.isEmpty(config.getVirtualHost())) {  

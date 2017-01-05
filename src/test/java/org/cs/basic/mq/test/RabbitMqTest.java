@@ -29,12 +29,14 @@ public class RabbitMqTest {
     @Before  
     public void init() throws IOException{  
    //     EventControlConfig config = new EventControlConfig(defaultHost);
-        EventControlConfig config2 = new EventControlConfig("192.168.0.19","admin","admin");
+//        EventControlConfig config2 = new EventControlConfig("192.168.0.19","admin","admin");
+        EventControlConfig config2 = new EventControlConfig("123.207.15.66:5672,115.28.41.97:5672,115.28.180.130:5672","cs","123456");
         controller = DefaultEventController.getInstance(config2);  
         eventTemplate = controller.getEopEventTemplate();  
       //  controller.add("QUEUE_TEST2", "EXCHANGE_TIME_YOTIME","Q_TIME_TEST",new ApiProcessEventProcessor2());  
-       // controller.add("QUEUE_TEST1", defaultExchange, new ApiProcessEventProcessorRPC());  
-        controller.add("QUEUE_TEST4", defaultExchange,"routingKey",new ApiProcessEventProcessor2());  
+//        controller.add("QUEUE_TEST1", defaultExchange, new ApiProcessEventProcessorRPC());  
+//        controller.add("QUEUE_TEST4", defaultExchange,"routingKey",new ApiProcessEventProcessor2());  
+        controller.add("Q_TEST", defaultExchange,new ApiProcessEventProcessor2());
         controller.start();  
     }  
       
@@ -43,7 +45,11 @@ public class RabbitMqTest {
     //   System.out.println("test异步");
     //    Object obj=eventTemplate.sendAndReceive("QUEUE_TEST1", defaultExchange, "hello world");  
     //	 eventTemplate.send("Q_TIME_TEST", defaultExchange,"QUEUE_TEST2","EXCHANGE_TIME_YOTIME","Q_TIME_TEST","hello world");
-    	 eventTemplate.send("QUEUE_TEST4", defaultExchange,"routingKey","hello world");
+   // 	 eventTemplate.send("QUEUE_TEST4", defaultExchange,"routingKey","hello world");
+    	//while(true){
+    		eventTemplate.send("Q_TEST", defaultExchange, "hello world");
+    	//	Thread.sleep(1000);
+    	//}
     //   System.out.println("test异步");
     //  System.out.println("返回"+obj);
     }  
