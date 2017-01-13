@@ -18,7 +18,7 @@ import org.springframework.amqp.core.ReceiveAndReplyCallback;
 public class RabbitMqTest {
 	private String defaultHost = "192.168.0.19";  
     
-    private String defaultExchange = "EXCHANGE_DIRECT_YOTIME";  
+    private String defaultExchange = "EXCHANGE_DIRECT_Test";  
       
     private String defaultQueue = "QUEUE_TEST1";  
       
@@ -28,8 +28,8 @@ public class RabbitMqTest {
       
     @Before  
     public void init() throws IOException{  
-   //     EventControlConfig config = new EventControlConfig(defaultHost);
-//        EventControlConfig config2 = new EventControlConfig("192.168.0.19","admin","admin");
+   //   EventControlConfig config = new EventControlConfig(defaultHost);
+//      EventControlConfig config2 = new EventControlConfig("192.168.0.19","admin","admin");
         EventControlConfig config2 = new EventControlConfig("123.207.15.66:5672,115.28.41.97:5672,115.28.180.130:5672","cs","123456");
         controller = DefaultEventController.getInstance(config2);  
         eventTemplate = controller.getEopEventTemplate();  
@@ -46,10 +46,12 @@ public class RabbitMqTest {
     //    Object obj=eventTemplate.sendAndReceive("QUEUE_TEST1", defaultExchange, "hello world");  
     //	 eventTemplate.send("Q_TIME_TEST", defaultExchange,"QUEUE_TEST2","EXCHANGE_TIME_YOTIME","Q_TIME_TEST","hello world");
    // 	 eventTemplate.send("QUEUE_TEST4", defaultExchange,"routingKey","hello world");
-    	//while(true){
-    		eventTemplate.send("Q_TEST", defaultExchange, "hello world");
+    	int i=0;
+    	while(true){
+//    		i++;
+//  		eventTemplate.send("Q_TEST", defaultExchange, i+":hello world");
     	//	Thread.sleep(1000);
-    	//}
+    	}
     //   System.out.println("test异步");
     //  System.out.println("返回"+obj);
     }  
@@ -107,7 +109,13 @@ public class RabbitMqTest {
     } 
     class ApiProcessEventProcessor2 implements EventProcesser{
   		public void process(Object e) {
-  				System.out.println("我进自定义方法咯"+e);
+ 				try {
+ 					Thread.sleep(100);
+  					System.out.println("我进自定义方法咯:"+e);
+				} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
   		}
       }  
 }

@@ -153,9 +153,9 @@ public class DefaultEventController implements EventController {
 	        msgListenerContainer.setMessageListener(listener);  
 	        msgListenerContainer.setErrorHandler(new MessageErrorHandler());  
 	        msgListenerContainer.setPrefetchCount(config.getPrefetchSize()); // 设置每个消费者消息的预取值  
-	        msgListenerContainer.setConcurrentConsumers(config.getEventMsgProcessNum());  
+	        msgListenerContainer.setConcurrentConsumers(config.getEventMsgProcessNum());  //消费者数量 
 	        msgListenerContainer.setTxSize(config.getPrefetchSize());//设置有事务时处理的消息数  
-	        msgListenerContainer.setQueues(queues.values().toArray(new Queue[queues.size()]));  
+	        msgListenerContainer.setQueues(queues.values().toArray(new Queue[queues.size()])); 
 	        msgListenerContainer.start();  
 	    }  
 	  
@@ -244,6 +244,4 @@ public class DefaultEventController implements EventController {
 	        }  
 	    }
 
-	
-	  
 }
