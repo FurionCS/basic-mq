@@ -94,7 +94,6 @@ public class DefaultEventTemplate implements EventTemplate {
 	        // 构造成Message  
 	        EventMessage msg = new EventMessage(queueName, exchangeName,routingKey, consumerQueueName,consumerExchange,
 	                eventContentBytes,type);  
-	        
 	        try {  
 	        	if(type==0 || type==2){   //普通
 	        		eventAmqpTemplate.convertAndSend(exchangeName, routingKey, msg); 

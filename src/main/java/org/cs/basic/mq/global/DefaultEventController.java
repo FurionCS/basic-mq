@@ -15,9 +15,11 @@ import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.ReceiveAndReplyCallback;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -223,7 +225,14 @@ public class DefaultEventController implements EventController {
 	        boolean needBinding = false;  
 	        DirectExchange directExchange = exchanges.get(exchangeName);  
 	        if(directExchange == null) {  
-	            directExchange = new DirectExchange(exchangeName, true, false, null);  
+	        	/**
+	        	 * 声明direct模式的exchange
+	        	 * 如果要声明topic的 new TopicExchange(exchangeName, true, false, null);
+	        	 * 广播fanout:  new FanoutExchange(name, durable, autoDelete)
+	        	 * 这里可以修改成更灵活的，但是也可以通过web中配置exchange的模式
+	        	 */
+	            directExchange = new DirectExchange(exchangeName, true, false, null);
+  
 	            exchanges.put(exchangeName, directExchange);  
 	            rabbitAdmin.declareExchange(directExchange);//声明exchange  
 	            needBinding = true;  
@@ -231,14 +240,29 @@ public class DefaultEventController implements EventController {
 	          
 	        Queue queue = queues.get(queueName);  
 	        if(queue == null) {  
-	            queue = new Queue(queueName, true, false, false);  
+	        	/**
+	        	 * Queue(name, durable, exclusive,  autoDelete)
+	        	 * durable是否持久化，exclusive：是否排外，autoDelete：是否自动删除
+	        	 * 持久的意思是：是否保存到erlang自带得数据库mnesia中，即重启服务是否消失
+	        	 * 排外的意思是：当前定义的队列是connection中的channel共享的，其他connection连接访问不到
+	        	 * 当connection.close时队列删除
+	        	 * 
+	        	 *  new Queue(name, durable, exclusive, autoDelete, arguments)
+	        	 *  arguments是队列得一些特性
+	        	 *  map.put("x-message-ttl",1000*8)
+	        	 */
+	            queue = new Queue(queueName, true, false, false);
 	            queues.put(queueName, queue);  
 	            rabbitAdmin.declareQueue(queue);    //声明queue  
 	            needBinding = true;  
 	        }  
 	          
 	        if(needBinding) {  
-	            Binding binding = BindingBuilder.bind(queue).to(directExchange).with(routingKey);//将queue绑定到exchange  
+	        	/**
+	        	 * 绑定队列到exchange上，并且设置routingkey
+	        	 * to（directExchange），to(topicExchange),to(fanoutExchange)..
+	        	 */
+	            Binding binding = BindingBuilder.bind(queue).to(directExchange).with(routingKey);
 	            rabbitAdmin.declareBinding(binding);//声明绑定关系  
 	            binded.add(bindRelation);  
 	        }  

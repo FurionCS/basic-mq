@@ -54,7 +54,7 @@ public class EventControlConfig {
 	    private int connectionTimeout = 0;  
 	      
 	    /** 
-	     * 事件消息处理线程数，默认是 CPU核数 * 2 
+	     * 事件消息处理线程数，对应，默认是 CPU核数 * 2 
 	     */  
 	    private int eventMsgProcessNum;  
 	      
