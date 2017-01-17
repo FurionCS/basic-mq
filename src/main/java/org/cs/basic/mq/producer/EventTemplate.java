@@ -46,4 +46,25 @@ public interface EventTemplate {
      * @throws Exception
      */
     void send(String queueName,String exchangeName,String consumerQueueName,String consumerExchange,String routing,Object eventContent) throws Exception;
+    /**
+     * 普通消息，对消息进行过期设置
+     * @param queueName
+     * @param exchangeName
+     * @param eventContent
+     * @param expiration  过期时间
+     * @param priority 优先级
+     * @throws Exception
+     */
+     void send(String queueName, String exchangeName, Object eventContent,int expiration,int priority) throws Exception;
+     /**
+      * 路由消息，对消息进行过期设置
+      * @param queueName
+      * @param exchangeName
+      * @param routing
+      * @param eventContent
+      * @param expiration 过期时间
+      * @param priority  优先级
+      * @throws Exception
+      */
+      void send(String queueName, String exchangeName, String routing,Object eventContent,int expiration,int priority) throws Exception;
 }

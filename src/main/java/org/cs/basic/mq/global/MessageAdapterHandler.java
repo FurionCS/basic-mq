@@ -8,7 +8,9 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.commons.lang.StringUtils;
 import org.cs.basic.mq.consumer.EventProcesser;
 import org.cs.basic.mq.consumer.EventProcesserRPC;
+import org.cs.basic.mq.util.ObjectAndByte;
 import org.jboss.logging.Logger;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.ReceiveAndReplyCallback;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
@@ -60,6 +62,36 @@ public class MessageAdapterHandler {
 	            return;  
 	        }  
 	    }  */
+	    public Object receiveMessage(byte[] message) throws IOException{
+	    	EventMessage eem=(EventMessage) ObjectAndByte.ByteToObject(message);
+   		 if (eem == null) {  
+	            logger.warn("Receive an null EventMessage, it may product some errors, and processing message is canceled.");  
+	            return "error";  
+	        }  
+	        if (StringUtils.isEmpty(eem.getQueueName()) || StringUtils.isEmpty(eem.getExchangeName())) {  
+	            logger.warn("The EventMessage's queueName and exchangeName is empty, this is not allowed, and processing message is canceled.");  
+	            return "error";  
+	        }  
+	        System.out.println(eem.toString());
+	        // 解码，并交给对应的EventHandle执行 
+	        EventProcessorWrap eepw=null;
+	        if(eem.getType()==2){
+	        	eepw= epwMap.get(eem.getConsumerQueueName()+"|"+eem.getConsumerExchange()+"|"+eem.getRoutingKey()); 
+	        }else{
+	        	eepw= epwMap.get(eem.getQueueName()+"|"+eem.getExchangeName()+"|"+eem.getRoutingKey());
+	        }
+	        if (eepw == null) {  
+	            logger.warn("Receive an EopEventMessage, but no processor can do it.");  
+	            return "error";  
+	        }  
+	        Object obj=null;
+	        if(eem.getType()==0|| eem.getType()==2){
+	        	eepw.process(eem.getEventData());
+	        }else if(eem.getType()==1){
+	        	obj=eepw.processRpc(eem.getEventData());
+	        }
+	        return obj;
+   }
 	    public Object receiveMessage(EventMessage eem) throws IOException{
 	    		 if (eem == null) {  
 		            logger.warn("Receive an null EventMessage, it may product some errors, and processing message is canceled.");  

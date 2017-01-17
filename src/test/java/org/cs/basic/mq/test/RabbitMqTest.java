@@ -36,24 +36,26 @@ public class RabbitMqTest {
       //  controller.add("QUEUE_TEST2", "EXCHANGE_TIME_YOTIME","Q_TIME_TEST",new ApiProcessEventProcessor2());  
 //        controller.add("QUEUE_TEST1", defaultExchange, new ApiProcessEventProcessorRPC());  
 //        controller.add("QUEUE_TEST4", defaultExchange,"routingKey",new ApiProcessEventProcessor2());  
-        controller.add("Q_TEST", defaultExchange,new ApiProcessEventProcessor2());
-        controller.start();  
+//        controller.add("QUEUE_TEST5", defaultExchange,new ApiProcessEventProcessor2());  
+//        controller.add("Q_TEST", defaultExchange,new ApiProcessEventProcessor2());
+//        controller.start();  
     }  
       
     @Test  
     public void sendString() throws Exception{  
     //   System.out.println("test异步");
-    //    Object obj=eventTemplate.sendAndReceive("QUEUE_TEST1", defaultExchange, "hello world");  
+//        Object obj=eventTemplate.sendAndReceive("QUEUE_TEST1", defaultExchange, "hello world");  
     //	 eventTemplate.send("Q_TIME_TEST", defaultExchange,"QUEUE_TEST2","EXCHANGE_TIME_YOTIME","Q_TIME_TEST","hello world");
-   // 	 eventTemplate.send("QUEUE_TEST4", defaultExchange,"routingKey","hello world");
+    //	 eventTemplate.send("QUEUE_TEST4", defaultExchange,"routingKey","hello world");
+    	 eventTemplate.send("QUEUE_TEST5", defaultExchange, "hello world",8000);
     	int i=0;
-    	while(true){
+//    	while(true){
 //    		i++;
 //  		eventTemplate.send("Q_TEST", defaultExchange, i+":hello world");
     	//	Thread.sleep(1000);
-    	}
+//    	}
     //   System.out.println("test异步");
-    //  System.out.println("返回"+obj);
+//      System.out.println("返回"+obj);
     }  
       
     @Test  
