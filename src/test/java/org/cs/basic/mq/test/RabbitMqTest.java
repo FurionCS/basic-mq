@@ -18,7 +18,7 @@ import org.springframework.amqp.core.ReceiveAndReplyCallback;
 public class RabbitMqTest {
 	private String defaultHost = "192.168.0.19";  
     
-    private String defaultExchange = "EXCHANGE_DIRECT_Test";  
+    private String defaultExchange = "EXCHANGE_DIRECT_YOTIME";  
       
     private String defaultQueue = "QUEUE_TEST1";  
       
@@ -30,7 +30,7 @@ public class RabbitMqTest {
     public void init() throws IOException{  
    //   EventControlConfig config = new EventControlConfig(defaultHost);
 //      EventControlConfig config2 = new EventControlConfig("192.168.0.19","admin","admin");
-        EventControlConfig config2 = new EventControlConfig("123.207.15.66:5672,115.28.41.97:5672,115.28.180.130:5672","cs","123456");
+        EventControlConfig config2 = new EventControlConfig("115.28.44.238","cs","123456");
         controller = DefaultEventController.getInstance(config2);  
         eventTemplate = controller.getEopEventTemplate();  
       //  controller.add("QUEUE_TEST2", "EXCHANGE_TIME_YOTIME","Q_TIME_TEST",new ApiProcessEventProcessor2());  

@@ -64,34 +64,44 @@ public class DefaultEventTemplate implements EventTemplate {
 	     * @param queueName  队列名
 	     * @param exchangeName 转化器
 	     * @param eventContent 对象
-	     * @param expiration 过期时间
-	     * @param priority  优先级
+	     * @param expiration 过期时间 (毫秒) 0表示不过期
+	     * @param priority  优先级  0(默认，也是最低)
 	     * @author Mr.Cheng
 	     */
 	    public void send(String queueName, String exchangeName, Object eventContent,int expiration,int priority)  
 	            throws Exception {  
 	        this.send(queueName, exchangeName, null,null,eventContent, defaultCodecFactory,0,queueName,expiration,priority);  
-	    }    
+	    } 
+	   
 	    /**
 	     * 带路由的普通消费模式，对message进行设置
 	     * @param queueName  队列名
 	     * @param exchangeName 转换器
 	     * @param routing  路由
 	     * @param eventContent 对象
-	     * @param expiration 消息过期时间
-	     * @param priority  优先级
+	     * @param expiration 过期时间 (毫秒) 0表示不过期
+	     * @param priority  优先级  0(默认，也是最低)
 	     * 
 	     */
 		public void send(String queueName, String exchangeName, String routing,
 				Object eventContent,int expiration,int priority) throws Exception {
 			this.send(queueName, exchangeName, null,null,eventContent, defaultCodecFactory, 0, routing,expiration,priority);
 		}  
+
 		/**
 		 * 队列延迟消费模式
 		 */
 		public void send(String queueName, String exchangeName, String consumerQueueName,String consumerExchange,String routing,
 				Object eventContent) throws Exception {
 			this.send(queueName, exchangeName,consumerQueueName,consumerExchange,eventContent, defaultCodecFactory, 2, routing,0,0);
+		} 
+		/**
+		 * 队列延迟消费模式
+		 * 消息过期时间
+		 */
+		public void send(String queueName, String exchangeName, String consumerQueueName,String consumerExchange,String routing,
+				Object eventContent,int expiration,int priority) throws Exception {
+			this.send(queueName, exchangeName,consumerQueueName,consumerExchange,eventContent, defaultCodecFactory, 2, routing,expiration,priority);
 		} 
 		/**
 		 * rpc模式

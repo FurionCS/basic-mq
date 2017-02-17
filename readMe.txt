@@ -29,4 +29,7 @@ basic-mq使用手册
 	 Object obj=eventTemplate.sendAndReceive("QUEUE_TEST1", defaultExchange, "hello world"); 
 	消费  
 	controller.add("QUEUE_TEST1", defaultExchange, new ApiProcessEventProcessorRPC());  
+	5：
+	生产
+	
 	 
