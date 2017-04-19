@@ -30,7 +30,7 @@ public class RabbitMqTest {
     public void init() throws IOException{  
    //   EventControlConfig config = new EventControlConfig(defaultHost);
 //      EventControlConfig config2 = new EventControlConfig("192.168.0.19","admin","admin");
-        EventControlConfig config2 = new EventControlConfig("115.28.44.238","cs","123456");
+  
         controller = DefaultEventController.getInstance(config2);  
         eventTemplate = controller.getEopEventTemplate();  
       //  controller.add("QUEUE_TEST2", "EXCHANGE_TIME_YOTIME","Q_TIME_TEST",new ApiProcessEventProcessor2());  
