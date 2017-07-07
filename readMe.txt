@@ -1,3 +1,58 @@
+## Basic-mq 
+### 说明：
+本项目是对spring-amqp 进行的封装，可以直接打包成jar，加入到自己项目中，然后在自己项目中配置响应依赖就可以。
+
+
+### 项目结构
+
+
+
+    --org.cs.basic.mq
+		--consumer
+		--global
+		--producer
+		--rpc
+		--topic
+		--util    --工具类 连接工具类，对象和byte转换工具类
+	--test
+		--org.cs.basic.test
+		--resources
+		
+
+
+
+### 使用方法
+1：编译项目打包成jar,加入到自己项目中
+2：在项目中加入依赖
+
+
+      <dependency>  
+        <groupId>com.rabbitmq</groupId>  
+        <artifactId>amqp-client</artifactId>  
+        <version>3.2.4</version>  
+    </dependency>  
+    <dependency>  
+        <groupId>org.springframework.amqp</groupId>  
+        <artifactId>spring-amqp</artifactId>  
+        <version>1.3.4.RELEASE</version>  
+    </dependency>  
+    <dependency>  
+        <groupId>org.springframework.amqp</groupId>  
+        <artifactId>spring-rabbit</artifactId>  
+        <version>1.3.4.RELEASE</version>  
+    </dependency>  
+    <dependency>  
+        <groupId>com.caucho</groupId>  
+        <artifactId>hessian</artifactId>  
+        <version>4.0.7</version>  
+    </dependency>  
+
+
+
+3：获得连接
+
+     EventControlConfig config2 = new EventControlConfig("192.168.0.19","admin","admin",1,1);
+
 basic-mq使用手册
 四种情况
 	1：最普通的生产消费     Q1---Q1
