@@ -49,42 +49,65 @@
 
 
 
-3：获得连接
+3：初始化配置
 
      EventControlConfig config2 = new EventControlConfig("192.168.0.19","admin","admin",1,1);
 
-basic-mq使用手册
-四种情况
-	1：最普通的生产消费     Q1---Q1
-	2:带路由得普通生产消费  Q1，R1---Q1，R1
-	3：延迟消费                     Q1，R1，Q2，E2---Q2，E2，R1
-	4:rpc生产消费            	 Q1---Q1
-	
-使用方法：
-	1： 
-	生产
-	eventTemplate.send("QUEUE_TEST4", defaultExchange,"hello world");
-	消费
-	controller.add("QUEUE_TEST4", defaultExchange,new ApiProcessEventProcessor2());
-	2：
-	生产
-	 eventTemplate.send("QUEUE_TEST4", defaultExchange,"routingKey","hello world");
-	消费
-	 controller.add("QUEUE_TEST4", defaultExchange,"routingKey",new ApiProcessEventProcessor2());  
-	3:
-	生产
-	eventTemplate.send("Q_TIME_TEST", defaultExchange,consumerQueueName,consumerExchange,routingKey,"hello world");
-	消费
-	controller.add(consumerQueueName, consumerExchange,"routingKey",new ApiProcessEventProcessor2());
-	还要在web页面配置下
-	参考
-	http://wenku.baidu.com/link?url=ZoYMqw7pxeyefWJXu6qKKRMMsmrZYKbxLqnp-HnX0bVELVvyhukDri-NAbkuzTBmDCxTWRNgvhPBT4Jix2KN7vlgg9KQ2uUjDtDuZlY7Svq
-	4：
-	生产
-	 Object obj=eventTemplate.sendAndReceive("QUEUE_TEST1", defaultExchange, "hello world"); 
-	消费  
-	controller.add("QUEUE_TEST1", defaultExchange, new ApiProcessEventProcessorRPC());  
-	5：
-	生产
-	
-	 
+4：初始化链接
+
+    DefaultEventController controller = DefaultEventController.getInstance(config2);  
+    
+    
+5:发送消息
+需要先获得发送模板对象
+
+    EventTemplate eventTemplate=controller.getEopEventTemplate();
+    eventTemplate.send("Q_T_Message_Expiration", defaultExchange, "hello world！", 8000, 0);
+
+    
+6:消费消息
+在消费端同样要执行第一步和第二步
+还需要添加监听队列，启动监听
+
+      controller.add("Q_T_Message_Expiration", defaultExchange,new MessagePriority());      
+      controller.start();
+
+
+
+     class MessagePriority implements EventProcesser{
+		public void process(Object e) {
+			try {
+				Thread.sleep(1000);
+				System.out.println(e);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			
+		}
+		
+    } 
+
+
+### 配置
+### config配置
+- public EventControlConfig(String serverHost)
+-  public EventControlConfig(String serverHost,String username,String password)
+-   public EventControlConfig(String serverHost,int port,String username,String password)
+-  public EventControlConfig(String serverHost,String username,String password,int processThreadNum,int prefetchSize)
+-   public EventControlConfig(String serverHost,String username,String password,int prefetchSize)
+
+> 当然自己可以在EventControlConfig.java中配置
+
+
+####  发送模式
+
+- void send(String queueName,String exchangeName,Object eventContent)
+-  Object sendAndReceive(String queueName,String exchangeName,Object eventContent)
+-  void send(String queueName,String exchangeName,String routing,Object eventContent)
+-  void send(String queueName,String exchangeName,String consumerQueueName,String consumerExchange,String routing,Object eventContent)
+-   void send(String queueName,String exchangeName,String consumerQueueName,String consumerExchange,String routing,Object eventContent,int expiration,int priority)
+-   void send(String queueName, String exchangeName, Object eventContent,int expiration,int priority) 
+-  void send(String queueName, String exchangeName, String routing,Object eventContent,int expiration,int priority) 
+
+
+
